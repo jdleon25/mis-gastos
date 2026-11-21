@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Solo se permite cargar archivos de este mismo sitio: los datos nunca salen del celular. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; form-action 'none'; base-uri 'self'">
+  <title>Mis Gastos</title>
+  <meta name="description" content="Registra tus gastos del mes por categoría. Tus datos se guardan solo en tu celular.">
+  <meta name="theme-color" content="#1f7a4d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Mis Gastos">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1 class="topbar-title">Mis Gastos</h1>
+  </header>
+
+  <main id="main">
+    <!-- ============ INICIO ============ -->
+    <section id="view-inicio" class="view" aria-labelledby="month-label">
+      <div id="home-banners"></div>
+
+      <div class="month-nav">
+        <button type="button" class="icon-btn" id="prev-month" aria-label="Mes anterior">‹</button>
+        <div class="month-nav-text">
+          <h2 id="month-label" class="month-label"></h2>
+          <span id="month-sub" class="muted small"></span>
+        </div>
+        <button type="button" class="icon-btn" id="next-month" aria-label="Mes siguiente">›</button>
+      </div>
+
+      <div class="card total-card">
+        <span class="muted">Total gastado</span>
+        <strong id="month-total" class="total-amount"></strong>
+        <span id="month-count" class="muted small"></span>
+      </div>
+
+      <button type="button" class="btn primary big add-btn" id="add-expense">+ Agregar gasto</button>
+
+      <h3 class="section-title">Por categoría</h3>
+      <div id="home-cats" class="card list-card"></div>
+
+      <h3 class="section-title">Gastos del mes</h3>
+      <ul id="home-list" class="card list-card exp-list"></ul>
+    </section>
+
+    <!-- ============ PRESUPUESTOS ============ -->
+    <section id="view-presupuestos" class="view" hidden aria-labelledby="budgets-title">
+      <h2 id="budgets-title" class="view-title">Presupuestos</h2>
+      <p class="muted" id="budgets-intro"></p>
+      <button type="button" class="btn primary big" id="add-budget">+ Agregar o cambiar presupuesto</button>
+      <div id="budget-list" class="card list-card"></div>
+    </section>
+
+    <!-- ============ COMPARAR ============ -->
+    <section id="view-comparar" class="view" hidden aria-labelledby="compare-title">
+      <h2 id="compare-title" class="view-title">Comparar meses</h2>
+
+      <h3 class="section-title" id="compare-subtitle"></h3>
+      <div id="compare-total" class="card"></div>
+      <div id="compare-list" class="card list-card"></div>
+
+      <h3 class="section-title">Total de los últimos 6 meses</h3>
+      <div class="card chart-card">
+        <div id="chart"></div>
+        <ul id="chart-legend" class="chart-legend"></ul>
+      </div>
+    </section>
+
+    <!-- ============ RESPALDO ============ -->
+    <section id="view-respaldo" class="view" hidden aria-labelledby="backup-title">
+      <h2 id="backup-title" class="view-title">Respaldo</h2>
+      <p>Tus gastos se guardan <strong>solo en este celular</strong>. Si se pierde, se daña o se borran los datos del navegador, también se pierden tus gastos. Exporta un respaldo con frecuencia y guárdalo en un lugar seguro (por ejemplo, en tu correo o en la nube).</p>
+
+      <div id="backup-status" class="card"></div>
+
+      <button type="button" class="btn primary big" id="export-btn">Exportar respaldo</button>
+      <p class="muted small">Se descarga un archivo con todos tus gastos y presupuestos.</p>
+
+      <button type="button" class="btn secondary big" id="import-btn">Importar respaldo</button>
+      <input type="file" id="import-file" accept=".json,application/json" hidden>
+      <p class="muted small">Restaura tus datos desde un archivo de respaldo. <strong>Reemplaza</strong> todos los datos actuales de este celular.</p>
+
+      <div id="storage-info" class="card muted small"></div>
+    </section>
+
+    <!-- ============ AYUDA ============ -->
+    <section id="view-ayuda" class="view" hidden aria-labelledby="help-title">
+      <h2 id="help-title" class="view-title">Instalar la app</h2>
+      <div id="install-state"></div>
+      <button type="button" class="btn primary big" id="install-btn" hidden>Instalar Mis Gastos</button>
+
+      <div class="card help-card">
+        <h3>iPhone (Safari)</h3>
+        <ol>
+          <li>Abre la dirección de la app en <strong>Safari</strong>.</li>
+          <li>Toca el botón <strong>Compartir</strong> (el cuadrado con una flecha hacia arriba).</li>
+          <li>Busca y toca <strong>Agregar a pantalla de inicio</strong>.</li>
+          <li>Toca <strong>Agregar</strong>.</li>
+        </ol>
+        <div class="notice warn">
+          <strong>Importante en iPhone:</strong> usa siempre la app desde el ícono de la <strong>pantalla de inicio</strong>, no desde Safari. La app instalada guarda sus datos aparte de Safari, y iPhone puede borrar los datos de las páginas que se abren en Safari si no las usas por un tiempo.
+        </div>
+      </div>
+
+      <div class="card help-card">
+        <h3>Android (Chrome)</h3>
+        <ol>
+          <li>Abre la dirección de la app en <strong>Chrome</strong>.</li>
+          <li>Toca el menú <strong>⋮</strong> (arriba a la derecha).</li>
+          <li>Toca <strong>Instalar app</strong> o <strong>Agregar a la pantalla principal</strong>.</li>
+          <li>Confirma con <strong>Instalar</strong>.</li>
+        </ol>
+      </div>
+
+      <div class="card help-card">
+        <h3>Ten en cuenta</h3>
+        <ul>
+          <li>Cada persona instala la app en su propio celular. Los datos de cada celular son independientes.</li>
+          <li>Después de instalarla, la app funciona sin internet.</li>
+          <li>Los datos no se pasan solos de un celular a otro. Para cambiar de celular, exporta un respaldo en el anterior e impórtalo en el nuevo.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tabbar" aria-label="Secciones">
+    <a href="#inicio" data-view="inicio">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+      <span>Inicio</span>
+    </a>
+    <a href="#presupuestos" data-view="presupuestos">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6 6"/></svg>
+      <span>Presupuestos</span>
+    </a>
+    <a href="#comparar" data-view="comparar">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>
+      <span>Comparar</span>
+    </a>
+    <a href="#respaldo" data-view="respaldo">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 19h16"/></svg>
+      <span>Respaldo</span>
+    </a>
+    <a href="#ayuda" data-view="ayuda">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17.5v.01"/></svg>
+      <span>Ayuda</span>
+    </a>
+  </nav>
+
+  <!-- ============ FORMULARIO DE GASTO ============ -->
+  <div class="overlay" id="expense-sheet" hidden>
+    <form class="sheet" id="expense-form" novalidate role="dialog" aria-modal="true" aria-labelledby="expense-title">
+      <header class="sheet-head">
+        <h2 id="expense-title">Nuevo gasto</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Cerrar">✕</button>
+      </header>
+      <div class="sheet-body">
+        <label class="field" for="f-amount">
+          <span class="field-label">Monto</span>
+          <span class="amount-wrap">
+            <span class="amount-sign">$</span>
+            <input id="f-amount" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00" enterkeyhint="done" aria-describedby="e-amount">
+          </span>
+          <small class="error" id="e-amount" role="alert"></small>
+        </label>
+
+        <fieldset class="field">
+          <legend class="field-label">Categoría <span id="cat-selected" class="cat-selected"></span></legend>
+          <div class="cat-grid" id="cat-grid"></div>
+          <button type="button" class="btn ghost more-btn" id="more-cats-btn" aria-expanded="false" aria-controls="more-cats">Más categorías ▾</button>
+          <div class="cat-list" id="more-cats" hidden></div>
+          <small class="error" id="e-cat" role="alert"></small>
+        </fieldset>
+
+        <label class="field" for="f-date">
+          <span class="field-label">Fecha</span>
+          <input id="f-date" type="date" required>
+          <small class="error" id="e-date" role="alert"></small>
+        </label>
+
+        <details class="optional" id="f-optional">
+          <summary>Método de pago y nota (opcional)</summary>
+          <label class="field" for="f-method">
+            <span class="field-label">Método de pago</span>
+            <select id="f-method"></select>
+          </label>
+          <label class="field" for="f-note">
+            <span class="field-label">Nota</span>
+            <input id="f-note" type="text" maxlength="100" autocomplete="off" placeholder="Ej.: compras de la semana">
+          </label>
+        </details>
+      </div>
+      <footer class="sheet-foot">
+        <button type="submit" class="btn primary big">Guardar</button>
+        <button type="button" class="btn danger" id="delete-expense" hidden>Borrar gasto</button>
+      </footer>
+    </form>
+  </div>
+
+  <!-- ============ FORMULARIO DE PRESUPUESTO ============ -->
+  <div class="overlay" id="budget-sheet" hidden>
+    <form class="sheet" id="budget-form" novalidate role="dialog" aria-modal="true" aria-labelledby="budget-sheet-title">
+      <header class="sheet-head">
+        <h2 id="budget-sheet-title">Presupuesto mensual</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Cerrar">✕</button>
+      </header>
+      <div class="sheet-body">
+        <label class="field" for="b-cat">
+          <span class="field-label">Categoría</span>
+          <select id="b-cat"></select>
+        </label>
+        <label class="field" for="b-amount">
+          <span class="field-label">Presupuesto por mes</span>
+          <span class="amount-wrap">
+            <span class="amount-sign">$</span>
+            <input id="b-amount" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00" enterkeyhint="done">
+          </span>
+          <small class="error" id="e-budget" role="alert"></small>
+        </label>
+        <p class="muted small" id="budget-note"></p>
+      </div>
+      <footer class="sheet-foot">
+        <button type="submit" class="btn primary big">Guardar presupuesto</button>
+        <button type="button" class="btn danger" id="remove-budget" hidden>Quitar presupuesto</button>
+      </footer>
+    </form>
+  </div>
+
+  <!-- ============ CONFIRMACIÓN ============ -->
+  <div class="overlay center" id="confirm" hidden>
+    <div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-msg">
+      <h2 id="confirm-title"></h2>
+      <p id="confirm-msg"></p>
+      <div class="dialog-actions">
+        <button type="button" class="btn secondary" id="confirm-cancel">Cancelar</button>
+        <button type="button" class="btn primary" id="confirm-ok">Aceptar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
